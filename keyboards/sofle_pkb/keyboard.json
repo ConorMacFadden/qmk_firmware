@@ -30,7 +30,6 @@
             "cycle_left_right": true
         },
         "driver": "ws2812",
-        "split_count": [36, 36],
         "layout": [
             {"x": 96, "y": 40, "flags": 8},
             {"x": 16, "y": 20, "flags": 2},
@@ -111,17 +110,6 @@
         "led_count": 72,
         "max_brightness": 255,
         "split_count": [36, 36]
-    },
-    "split": {
-        "transport": {
-            "sync": {
-                "oled": true,
-                "wpm": true
-            }
-        }
-    },
-    "ws2812": {
-        "pin": "GP0"
     },
     "layouts": {
         "LAYOUT": {
