@@ -16,16 +16,9 @@
   */ 
 
 #include QMK_KEYBOARD_H
+#include "layers.h"
 #include "display_oled.c"
-
-enum sofle_layers {
-  _QWERTY,
-  _LOWER,
-  _RAISE,
-  _ADJUST,
-  _NUMPAD,
-  _SWITCH
-};
+#include "rgb.c"
 
 enum custom_keycodes {
   KC_QWERTY = SAFE_RANGE,
@@ -46,8 +39,8 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 //                           CCW      CW                                 CCW      CW    
     [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
     [1] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(KC_PGUP, KC_PGDN) },
-    [2] = { ENCODER_CCW_CW(RM_VALU, RM_VALD),           ENCODER_CCW_CW(RM_PREV, RM_NEXT) },
-    [3] = { ENCODER_CCW_CW(RM_HUEU, RM_HUED),           ENCODER_CCW_CW(RM_SATD, RM_SATU) },
+    [2] = { ENCODER_CCW_CW(RM_VALD, RM_VALU),           ENCODER_CCW_CW(RM_PREV, RM_NEXT) },
+    [3] = { ENCODER_CCW_CW(RM_HUED, RM_HUEU),           ENCODER_CCW_CW(RM_SATD, RM_SATU) },
     [4] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(_______, _______) },
     [5] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(_______, _______) }
 };
@@ -362,102 +355,3 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
-
-// RGB
-
-#ifdef RGB_MATRIX_ENABLE
-
-static uint8_t indicator_brightness_scaler = 64;
-
-static hsv_t prev_hsv;
-static bool saved_prev = false;
-
-// Helper to save current global HSV
-void save_current_hsv(void) {
-    if (!saved_prev) {
-        prev_hsv = rgb_matrix_get_hsv();
-        saved_prev = true;
-    }
-}
-
-// Restore previous global HSV
-void restore_previous_hsv(void) {
-    if (saved_prev) {
-        rgb_matrix_sethsv(prev_hsv.h, prev_hsv.s, prev_hsv.v);
-        saved_prev = false;
-    }
-}
-
-// === Helper functions ===
-static RGB hsv_to_rgb_brightness(HSV hsv, uint8_t brightness) {
-    RGB rgb = hsv_to_rgb(hsv);
-    rgb.r = (rgb.r * brightness) / 255;
-    rgb.g = (rgb.g * brightness) / 255;
-    rgb.b = (rgb.b * brightness) / 255;
-    return rgb;
-}
-
-static void set_indicators(HSV hsv) {
-    uint8_t current_brightness = rgb_matrix_get_val();
-    uint8_t indicator_brightness  = indicator_brightness_scaler * current_brightness / 255;
-    RGB rgb = hsv_to_rgb_brightness(hsv,indicator_brightness);
-    rgb_matrix_set_color(0,  rgb.r, rgb.g, rgb.b);
-    rgb_matrix_set_color(36, rgb.r, rgb.g, rgb.b);
-}
-
-static void set_underglow(HSV hsv) {
-    RGB rgb = hsv_to_rgb(hsv);
-    uint8_t underglow[] = {1, 2, 3, 4, 5, 6, 37, 38, 39, 40, 41, 42};
-    for (uint8_t i = 0; i < sizeof(underglow); i++) {
-        rgb_matrix_set_color(underglow[i], rgb.r, rgb.g, rgb.b);
-    }
-}
-
-// === Layer lighting ===
-static void layer_numpad_lighting(void) {
-    set_indicators((HSV){HSV_ORANGE});
-    set_underglow((HSV){HSV_ORANGE});
-
-    // Example: numpad keys in blue
-    HSV hsv = {HSV_BLUE};
-    RGB rgb = hsv_to_rgb(hsv);
-    uint8_t numpad_keys[] = { 43, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 64, 65, 66, 67 };
-    for (uint8_t i = 0; i < sizeof(numpad_keys); i++) {
-        rgb_matrix_set_color(numpad_keys[i], rgb.r, rgb.g, rgb.b);
-    }
-}
-
-static void layer_qwerty_lighting(void) {
-    set_indicators((HSV){HSV_WHITE});
-}
-
-static void layer_lower_lighting(void) {
-    set_indicators((HSV){HSV_BLUE});
-    set_underglow((HSV){HSV_BLUE});
-}
-
-static void layer_raise_lighting(void) {
-    set_indicators((HSV){HSV_PURPLE});
-    set_underglow((HSV){HSV_PURPLE});
-}
-
-static void layer_adjust_lighting(void) {
-    set_indicators((HSV){HSV_GREEN});
-    set_underglow((HSV){HSV_GREEN});
-    // Maybe light only top row instead of full underglow here
-}
-
-// === Dispatcher ===
-bool rgb_matrix_indicators_user(void) {
-    switch (get_highest_layer(layer_state)) {
-        case _QWERTY: layer_qwerty_lighting(); return true;
-        case _NUMPAD:  layer_numpad_lighting();  return true;
-        case _LOWER:  layer_lower_lighting();  return true;
-        case _RAISE: layer_raise_lighting(); return true;
-        case _ADJUST:  layer_adjust_lighting();  return true;
-        default: return false; // fall back to normal effect
-    }
-}
-
-#endif
-
