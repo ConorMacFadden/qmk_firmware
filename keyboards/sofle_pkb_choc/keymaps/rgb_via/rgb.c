@@ -1,17 +1,17 @@
 // RGB
     // Physical Layout
   // Columns
-  // 0  1  2  3  4  5  6  7  8  9  10 11 12 13
-  //                                           ROWS
-  // 11 12 21 22 31 32       52 39 40 49 50 57  0
-  //  
-  // 10 13 20 23 30 33       31 38 41 48 51 46  1
+  //     0  1  2  3  4  5                 5  4  3  2  1  0
+  //ROWL                                                    ROWR
+  //  0  28 21 20 11 10 00                29 39 40 49 50 57   5
+  //   
+  //  1  27 22 19 12 09 01                30 38 41 48 51 56   6
   //                
-  // 09 14 19 24 29 34       32 37 42 47 52 45  2
+  //  2  26 23 18 13 08 02                31 37 42 47 52 55   7
+  
+  //  3  25 24 17 14 07 03                32 36 43 46 53 54   8
   //
-  // 08 15 18 25 28 35       33 36 43 46 53 34  3
-  //
-  //    04 03 02  01 00     34 35  44 45 54      4
+  //  4       16 15 06  05 04 xx   xx 33 34  35 44 45    9
   //    
 
 #include "layers.h"
@@ -74,7 +74,7 @@ static void layer_numpad_lighting(void) {
     // Example: numpad keys in blue
     HSV hsv = {HSV_ORANGE};     
     RGB rgb = hsv_to_rgb_brightness(hsv, get_brightness());
-    uint8_t numpad_keys[] = { 31, 32, 33, 36, 37, 38, 41, 42, 43, 48, 49, 50 };
+    uint8_t numpad_keys[] = { 35, 36, 37, 38, 38, 41, 42, 43, 44, 45, 46, 47, 48 };
     for (uint8_t i = 0; i < sizeof(numpad_keys); i++) {
         rgb_matrix_set_color(numpad_keys[i], rgb.r, rgb.g, rgb.b);
     }
