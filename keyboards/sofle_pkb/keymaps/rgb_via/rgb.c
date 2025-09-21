@@ -19,28 +19,40 @@
 
 #ifdef RGB_MATRIX_ENABLE
 
-static uint8_t indicator_brightness_scaler = 64;
+// Scaling parameter for indicators - Max 255.
+static uint8_t indicator_brightness_scaler = 32;
 
-static hsv_t prev_hsv;
-static bool saved_prev = false;
+// Variables for Dimming of RGB on layers
+static uint8_t prev_val;
+static bool dimmed = false;
 
-// Helper to save current global HSV
-void save_current_hsv(void) {
-    if (!saved_prev) {
-        prev_hsv = rgb_matrix_get_hsv();
-        saved_prev = true;
+void dim_rgb(void) {
+    if (!dimmed) {
+        hsv_t current_hsv = rgb_matrix_get_hsv();
+        prev_val = current_hsv.v;
+        uint8_t new_v = current_hsv.v * 128 / 255; // Half the current val
+        rgb_matrix_sethsv(current_hsv.h, current_hsv.s, new_v);
+        dimmed = true;
     }
 }
 
-// Restore previous global HSV
-void restore_previous_hsv(void) {
-    if (saved_prev) {
-        rgb_matrix_sethsv(prev_hsv.h, prev_hsv.s, prev_hsv.v);
-        saved_prev = false;
+void restore_rgb_brightness(void) {
+    if (dimmed) {
+        hsv_t current_hsv = rgb_matrix_get_hsv();
+        rgb_matrix_sethsv(current_hsv.h, current_hsv.s, prev_val);
+        dimmed = false;
     }
 }
 
 // === Helper functions ===
+static uint8_t get_brightness(void) {
+    if (dimmed) {
+        return prev_val;
+    } else {
+        return rgb_matrix_get_val();
+    }
+}
+
 static RGB hsv_to_rgb_brightness(HSV hsv, uint8_t brightness) {
     RGB rgb = hsv_to_rgb(hsv);
     rgb.r = (rgb.r * brightness) / 255;
@@ -50,7 +62,7 @@ static RGB hsv_to_rgb_brightness(HSV hsv, uint8_t brightness) {
 }
 
 static void set_indicators(HSV hsv) {
-    uint8_t current_brightness = rgb_matrix_get_val();
+    uint8_t current_brightness = get_brightness();
     uint8_t indicator_brightness  = indicator_brightness_scaler * current_brightness / 255;
     RGB rgb = hsv_to_rgb_brightness(hsv,indicator_brightness);
     rgb_matrix_set_color(0,  rgb.r, rgb.g, rgb.b);
@@ -58,21 +70,33 @@ static void set_indicators(HSV hsv) {
 }
 
 static void set_underglow(HSV hsv) {
-    RGB rgb = hsv_to_rgb(hsv);
+    uint8_t brightness = get_brightness();
+    RGB rgb = hsv_to_rgb_brightness(hsv, brightness);
     uint8_t underglow[] = {1, 2, 3, 4, 5, 6, 37, 38, 39, 40, 41, 42};
     for (uint8_t i = 0; i < sizeof(underglow); i++) {
         rgb_matrix_set_color(underglow[i], rgb.r, rgb.g, rgb.b);
     }
 }
 
+static void set_lighting(bool dimRgb, HSV indicatorHSV, HSV underglowHSV) {
+    if (dimRgb) {
+        dim_rgb();
+    } else { 
+        restore_rgb_brightness();
+    }
+    set_indicators(indicatorHSV);
+    set_underglow(underglowHSV);
+}
+
 // === Layer lighting ===
+
+// _NUMPAD
 static void layer_numpad_lighting(void) {
-    set_indicators((HSV){HSV_ORANGE});
-    set_underglow((HSV){HSV_ORANGE});
+    set_lighting(true,(HSV){HSV_ORANGE},(HSV){HSV_ORANGE});
 
     // Example: numpad keys in blue
-    HSV hsv = {HSV_BLUE};
-    RGB rgb = hsv_to_rgb(hsv);
+    HSV hsv = {HSV_ORANGE};     
+    RGB rgb = hsv_to_rgb_brightness(hsv, get_brightness());
     uint8_t numpad_keys[] = { 43, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 64, 65, 66, 67 };
     for (uint8_t i = 0; i < sizeof(numpad_keys); i++) {
         rgb_matrix_set_color(numpad_keys[i], rgb.r, rgb.g, rgb.b);
@@ -80,20 +104,19 @@ static void layer_numpad_lighting(void) {
 }
 
 static void layer_qwerty_lighting(void) {
+    restore_rgb_brightness();
     set_indicators((HSV){HSV_WHITE});
 }
 
 static void layer_lower_lighting(void) {
-    set_indicators((HSV){HSV_BLUE});
-    set_underglow((HSV){HSV_BLUE});
+    set_lighting(false, (HSV){HSV_BLUE},(HSV){HSV_BLUE});
 }
 
 static void layer_raise_lighting(void) {
-    set_indicators((HSV){HSV_PURPLE});
-    set_underglow((HSV){HSV_PURPLE});
+    set_lighting(true, (HSV){HSV_PURPLE},(HSV){HSV_PURPLE});
 
     HSV hsv = {HSV_BLUE};
-    RGB rgb = hsv_to_rgb(hsv);
+    RGB rgb = hsv_to_rgb_brightness(hsv,get_brightness());
     uint8_t numpad_keys[] = { 55, 59, 60, 65 };
     for (uint8_t i = 0; i < sizeof(numpad_keys); i++) {
         rgb_matrix_set_color(numpad_keys[i], rgb.r, rgb.g, rgb.b);
@@ -102,10 +125,11 @@ static void layer_raise_lighting(void) {
 }
 
 static void layer_adjust_lighting(void) {
+    restore_rgb_brightness();
     set_indicators((HSV){HSV_GREEN});
     set_underglow((HSV){HSV_GREEN});
-    // Maybe light only top row instead of full underglow here
 }
+
 
 // === Dispatcher ===
 bool rgb_matrix_indicators_user(void) {
