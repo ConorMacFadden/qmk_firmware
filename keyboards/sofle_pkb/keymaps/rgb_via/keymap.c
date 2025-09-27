@@ -112,7 +112,7 @@ LT(_NUMPAD,KC_TAB),   KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                  
   _______, _______ , _______ , _______ , _______ , _______,                        _______,  _______  , _______,  _______ ,  _______ ,_______,
   _______, KC_INS,  KC_PSCR,  KC_APP,   XXXXXXX,  XXXXXXX,                         KC_PGUP, KC_PRVWD, KC_UP,   KC_NXTWD, _______, KC_DEL,
   _______, KC_LGUI, KC_LALT,  KC_LSFT,  KC_LCTL,  KC_CAPS,                         KC_PGDN, KC_LEFT,  KC_DOWN, KC_RGHT,  KC_DEL, KC_BSPC,
-  _______, KC_UNDO, KC_CUT,   KC_COPY,  KC_PASTE, XXXXXXX,  _______,     _______,  KC_HOME, _______,  KC_END,  _______,   XXXXXXX, _______,
+  _______, KC_UNDO, KC_CUT,   KC_COPY,  KC_PASTE, XXXXXXX,  _______,     _______,  XXXXXXX, KC_HOME,  XXXXXXX, KC_END,   XXXXXXX, _______,
                          _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______
 ),
 /* ADJUST
