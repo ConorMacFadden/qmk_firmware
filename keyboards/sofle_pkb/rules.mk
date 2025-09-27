@@ -1,9 +1,11 @@
 # MCU name
 MCU = RP2040
+
 # Bootloader selection
 BOOTLOADER = rp2040
 
 SPLIT_KEYBOARD = yes
+SERIAL_DRIVER = vendor
 SWAP_HANDS_ENABLE = yes
 
 # Build Options
@@ -18,6 +20,5 @@ QMK_SETTINGS    = yes
 COMBO_ENABLE    = no
 KEY_OVERRIDE_ENABLE = no
 
-SERIAL_DRIVER = vendor
 WS2812_DRIVER = vendor
 OLED_DRIVER   = ssd1306

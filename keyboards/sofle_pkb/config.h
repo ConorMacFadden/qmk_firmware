@@ -15,11 +15,10 @@
 //#define MASTER_LEFT
 #define SPLIT_HAND_PIN GP4
 #define	SPLIT_HAND_PIN_LOW_IS_LEFT
-#define USB_VBUS_PIN 19
 #define USE_SERIAL
 #define SERIAL_PIO_USE_PIO0
 #define SERIAL_USART_TX_PIN   GP1
-
+#define USB_VBUS_PIN 19
 
 /* Reset. */
 #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET
@@ -34,7 +33,7 @@
     #define I2C1_SCL_PIN GP3
     #define OLED_BRIGHTNESS 180
     #define OLED_TIMEOUT 60000
-    #define OLED_FONT_H "lib/glcdfont.c"
+    #define OLED_FONT_H "lib/oledFont.c"
     // #define WPM_ESTIMATED_WORD_SIZE 5
     #define SPLIT_LAYER_STATE_ENABLE
     #define SPLIT_LED_STATE_ENABLE
@@ -44,18 +43,15 @@
 #endif
 
 #ifdef RGB_MATRIX_ENABLE
-    #define RGB_MATRIX_LED_COUNT       72 // Number of LEDs
-    #define RGBLED_NUM RGB_MATRIX_LED_COUNT
-    #define DRIVER_LED_TOTAL RGB_MATRIX_LED_COUNT
-    #define RGB_MATRIX_SPLIT { 36, 36 }
-    #define WS2812_DI_PIN            GP0
+    #define RGB_MATRIX_LED_COUNT        72 // Number of LEDs
+    #define DRIVER_LED_TOTAL            RGBLED_NUM
+    #define WS2812_DI_PIN               GP0
     #define WS2812_PIO_USE_PIO1
 
     #define SPLIT_TRANSPORT_MIRROR
     #define RGB_MATRIX_FRAMEBUFFER_EFFECTS
     #define RGB_MATRIX_KEYPRESSES
     #define RGB_MATRIX_SLEEP
-    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 255
     #define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_CYCLE_LEFT_RIGHT
 
     #define ENABLE_RGB_MATRIX_ALPHAS_MODS         //  1. Static dual hue, speed is hue for secondary hue

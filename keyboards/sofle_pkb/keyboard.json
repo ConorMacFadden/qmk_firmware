@@ -1,17 +1,19 @@
 {
     "manufacturer": "PandaKB.COM",
     "keyboard_name": "Sofle RGB",
-    "maintainer": "PandaKB.COM",
-    "build": {
-        "lto": true
-    },
-    "diode_direction": "COL2ROW",
     "url": "https://github.com/josefadamcik/SofleKeyboard",
+    "maintainer": "PandaKB.COM",    
     "usb": {
         "vid": "0x7171",
         "pid": "0x0004",
         "device_version": "1.0.0"
     },
+    "processor": "RP2040",
+    "bootloader": "rp2040",
+    "build": {
+        "lto": true
+    },
+    "diode_direction": "COL2ROW",
     "features": {
         "bootmagic": true,
         "extrakey": true,
@@ -115,7 +117,9 @@
             {"flags": 4, "matrix": [6, 5], "x": 144, "y": 22},
             {"flags": 4, "matrix": [7, 5], "x": 144, "y": 34},
             {"flags": 4, "matrix": [8, 5], "x": 144, "y": 47}
-        ]
+        ],
+        "max_brightness":255,
+        "split_count": [36, 36]
     },
     "rgblight": {
         "led_count": 72,
