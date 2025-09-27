@@ -199,7 +199,7 @@ const char *keycode_string(uint16_t keycode) {
             keycode_str = "Undef\0";
             break;
     }
-
+ 
     return keycode_str;
 }
 
@@ -207,22 +207,22 @@ const char *layer_string(uint32_t layer) {
     char *layer_str;
     switch (layer) {
         case 0:
-            layer_str = "Zero\0";
+            layer_str = "Qwert\0";
             break;
         case 1:
-            layer_str = "One\0";
+            layer_str = "Sym\0";
             break;
         case 2:
-            layer_str = "Two\0";
+            layer_str = "Nav\0";
             break;
         case 3:
-            layer_str = "Three\0";
+            layer_str = "Adj\0";
             break;
         case 4:
-            layer_str = "Four\0";
+            layer_str = "Num\0";
             break;
         case 5:
-            layer_str = "Five\0";
+            layer_str = "Switc\0";
             break;
         case 6:
             layer_str = "Six\0";
