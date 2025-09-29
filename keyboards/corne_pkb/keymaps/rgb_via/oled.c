@@ -310,34 +310,6 @@ void render_mod_status(uint8_t modifiers) {
 
 }
 
-void render_layer_state(void) {
-    static const char PROGMEM default_layer[] = {
-        0x20, 0x94, 0x95, 0x96, 0x20,
-        0x20, 0xb4, 0xb5, 0xb6, 0x20,
-        0x20, 0xd4, 0xd5, 0xd6, 0x20, 0};
-    static const char PROGMEM raise_layer[] = {
-        0x20, 0x97, 0x98, 0x99, 0x20,
-        0x20, 0xb7, 0xb8, 0xb9, 0x20,
-        0x20, 0xd7, 0xd8, 0xd9, 0x20, 0};
-    static const char PROGMEM lower_layer[] = {
-        0x20, 0x9a, 0x9b, 0x9c, 0x20,
-        0x20, 0xba, 0xbb, 0xbc, 0x20,
-        0x20, 0xda, 0xdb, 0xdc, 0x20, 0};
-    static const char PROGMEM adjust_layer[] = {
-        0x20, 0x9d, 0x9e, 0x9f, 0x20,
-        0x20, 0xbd, 0xbe, 0xbf, 0x20,
-        0x20, 0xdd, 0xde, 0xdf, 0x20, 0};
-    if(layer_state_is(3)) {
-        oled_write_P(adjust_layer, false);
-    } else if(layer_state_is(1)) {
-        oled_write_P(lower_layer, false);
-    } else if(layer_state_is(2)) {
-        oled_write_P(raise_layer, false);
-    } else {
-        oled_write_P(default_layer, false);
-    }
-}
-
 const char *layer_string(uint32_t layer) {
     char *layer_str;
     switch (layer) {
@@ -372,65 +344,56 @@ const char *layer_string(uint32_t layer) {
     return layer_str;
 }
 
-layer_state_t layer_state_set_kb(layer_state_t state) {
-    state = layer_state_set_user(state);
-    oled_set_cursor(0, 9);
-    oled_write_ln(layer_string(get_highest_layer(state)), false);
-    return state;
+void render_layer_state(void) {
+    static const char PROGMEM default_layer[] = {
+        0x20, 0x94, 0x95, 0x96, 0x20,
+        0x20, 0xb4, 0xb5, 0xb6, 0x20,
+        0x20, 0xd4, 0xd5, 0xd6, 0x20, 0};
+    static const char PROGMEM raise_layer[] = {
+        0x20, 0x97, 0x98, 0x99, 0x20,
+        0x20, 0xb7, 0xb8, 0xb9, 0x20,
+        0x20, 0xd7, 0xd8, 0xd9, 0x20, 0};
+    static const char PROGMEM lower_layer[] = {
+        0x20, 0x9a, 0x9b, 0x9c, 0x20,
+        0x20, 0xba, 0xbb, 0xbc, 0x20,
+        0x20, 0xda, 0xdb, 0xdc, 0x20, 0};
+    static const char PROGMEM adjust_layer[] = {
+        0x20, 0x9d, 0x9e, 0x9f, 0x20,
+        0x20, 0xbd, 0xbe, 0xbf, 0x20,
+        0x20, 0xdd, 0xde, 0xdf, 0x20, 0};
+    if(layer_state_is(3)) {
+        oled_write_P(adjust_layer, false);
+    } else if(layer_state_is(1)) {
+        oled_write_P(lower_layer, false);
+    } else if(layer_state_is(2)) {
+        oled_write_P(raise_layer, false);
+    } else {
+        oled_write_P(default_layer, false);
+    }
+    oled_write_ln(layer_string(get_highest_layer(layer_state)), false);
 }
 
-
-static void render_logo(void) {
-// logo图像，在https://joric.github.io/qle/生成，需要做成32*128大小的，然后把“static const unsigned char”改成“static const char”
-    static const char PROGMEM raw_logo[] =   {
-        0,128, 64, 64,  0, 64, 64,128,  0,  0,  0,128, 64, 32, 16,  8,  4,  2,  2,  2,  2,  2,  2,  2,  4, 12, 24,224,  0,  0,  0,  0, 31, 32, 32,224,  0,192,224,249,250,253,253,254,252,240,224,192,128,128,  0,  0,  0,  0,  0,  0,  0,  0,  0,159,  0,  0,  0,  0,  0,  0,254,  1,255,255,255,255,255,255,255,255,255,255,127,127, 63, 63, 63, 31, 31, 31, 14, 14,  6,  2,  0,  3,  2,  4, 56,  0,128, 64, 33, 22, 25,  7, 15, 15, 15,195,225,225,240,240,240,240,248,248,248,248,248,248,248,240,240,224,192,128,  0,240, 14,  0,
-        3,204, 48,192,224,240,248,254,255,255,255,255,255,255, 63, 31, 15, 15, 15,  7, 15, 31,255,255,255,255,255,255,254,225,252,  0,  0, 15,224, 63,255,255,255,255,255,255,255,255,255,252,240,246,246,240,240, 56, 28,127,255,127,255,255,255,255,255, 51,255,  0,  0,  0,253,  2,  1,  3, 15, 31, 63,127,127,127,255,255,225,197,133,129,131,134,252,255,255,254,255,255,255, 63,  3,  0, 31,192,  0,  0,  0,  1,  1,  2,  2,  2,  2,193,225, 96, 98,194,226, 98, 98,227,199, 13, 11, 19, 35, 67, 65, 65, 64, 64, 64, 32, 60,  3, 
-        0,  0,  0,  0,  0,  0,  0,  0,  0,207,207,140,140, 13, 13,140,140,207,207,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 56, 57, 59, 63, 63, 63, 63,187,185,184,128,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 62,127,255,227,  3,  3,  3,  3,113,120, 56, 56,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 12, 30, 30,126,254,254,142,128,128,128,128, 28, 60, 56, 56,  0,  3,  3,  0,  0,  0,  0,  0,  0, 
-        0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,224,241,251,251, 59, 59, 59, 57, 56,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,193,227,231,103,103,119,247,247,247,  0,  0, 60, 42, 42, 42, 42,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,128,128,199,207,223,156, 24, 24, 31, 15,  7,  0,  0,142, 17, 17, 17,142,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 14, 63, 59,113,113,113,127,127,112,112,112,112,  0,  0,  3,  4,  4,100, 99,  0,  0,  0,  0,  0,
-    };
-    oled_write_raw_P(raw_logo, sizeof(raw_logo));
-}
-/*
-static void render_gui_off(void) {
-    static const unsigned char PROGMEM raw_gui_off[] = {
-        248,  4,  2,  2,  2,130,226,250,226,130,  2,  2,  2,  4,248,  0, 63, 64,144,152,158,143,143,131,143,143,158,152,144, 64, 63,  0,
-    };
-    oled_write_raw_P(raw_gui_off, sizeof(raw_gui_off));
-}
-
-static void render_gui_on(void) {
-    static const unsigned char PROGMEM raw_gui_on[] = {
-        248,252,254,254, 62,142,226,250,226,142, 62,254,254,252,248,  0, 63, 71,211,216,222,207,239,227,239,207,222,216,211, 71, 63,  0,
-    };
-    oled_write_raw_P(raw_gui_on, sizeof(raw_gui_on));
-}
-
-static void render_shift_on(void) {
-    static const unsigned char PROGMEM raw_logo[] = {
-        248,252, 62,158,206,230,242,250,242,230,206,158, 62,252,248,  0, 63,127,254,254,192,223,223,223,223,223,192,254,254,127, 63,  0,
-    };
-    oled_write_raw_P(raw_logo, sizeof(raw_logo));
-}
-*/
+static bool main_oled_init_done = false;
 
 bool oled_task_user(void) {
     // Renders the current keyboard state (layers and mods)
         /* KEYBOARD PET VARIABLES START */
 
-    // if (is_keyboard_master()) {
-    if (true) {
-        current_wpm   = get_current_wpm();
-        //led_usb_state = host_keyboard_led_state();
-
-        oled_set_cursor(0, 0);
-        render_luna(0, 1);
-        oled_set_cursor(0, 6);
-        render_layer_state();
-        oled_set_cursor(0, 12);
-        render_mod_status(get_mods()|get_oneshot_mods());
-    } else {
-        render_logo();  // Renders a static logo
+    if (!main_oled_init_done){
+        oled_set_cursor(0, 9);
+        oled_write_ln(layer_string(0), false);
+        main_oled_init_done = true;
     }
+
+    current_wpm   = get_current_wpm();
+
+    oled_set_cursor(0, 0);
+    render_luna(0, 1);
+    oled_set_cursor(0, 6);
+    render_layer_state();
+    oled_set_cursor(0, 12);
+    render_mod_status(get_mods()|get_oneshot_mods());
+
     return false;
 }
 

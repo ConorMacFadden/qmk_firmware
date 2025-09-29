@@ -4,11 +4,11 @@
 #define DEBOUNCE 5
 
 /* encoder support */
-#define ENCODER_A_PINS { GP29 }
-#define ENCODER_B_PINS { GP28 }
-#define ENCODER_A_PINS_RIGHT { GP28 }
-#define ENCODER_B_PINS_RIGHT { GP29 }
-#define ENCODER_RESOLUTION 4
+#define ENCODER_A_PINS { GP28 }
+#define ENCODER_B_PINS { GP29 }
+#define ENCODER_A_PINS_RIGHT { GP29 }
+#define ENCODER_B_PINS_RIGHT { GP28 }
+#define ENCODER_RESOLUTION 2
 
 #define TAP_CODE_DELAY 10
 
@@ -40,13 +40,12 @@
     #define SPLIT_MODS_ENABLE
     #define SPLIT_WPM_ENABLE
     #define SPLIT_OLED_ENABLE
+    #define OLED_UPDATE_INTERVAL 50
 #endif
 
 #ifdef RGB_MATRIX_ENABLE
     #define RGB_MATRIX_LED_COUNT       58 // Number of LEDs
-    #define RGBLED_NUM RGB_MATRIX_LED_COUNT
-    #define DRIVER_LED_TOTAL RGB_MATRIX_LED_COUNT
-    #define RGB_MATRIX_SPLIT { 29, 29 }
+    #define DRIVER_LED_TOTAL            RGBLED_NUM
     #define WS2812_DI_PIN            GP0
     #define WS2812_PIO_USE_PIO1
 
@@ -54,7 +53,6 @@
     #define RGB_MATRIX_FRAMEBUFFER_EFFECTS
     #define RGB_MATRIX_KEYPRESSES
     #define RGB_MATRIX_SLEEP
-    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 255
     #define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_CYCLE_LEFT_RIGHT
 
     #define ENABLE_RGB_MATRIX_ALPHAS_MODS         // Static dual hue, speed is hue for secondary hue
