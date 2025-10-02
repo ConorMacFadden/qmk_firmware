@@ -432,7 +432,9 @@ void oled_init_second(void) {
     oled_set_cursor(0, 0);
     oled_write_ln("RGB", false);
     render_spacer(4);
-
+    oled_set_cursor(0,8);
+    oled_write_ln("WPM",false);
+    render_spacer(4);
 }
 
 static bool main_oled_init_done = false;
@@ -468,7 +470,7 @@ bool oled_task_user(void) {
         }
         if (last_wpm != get_current_wpm()) {
             last_wpm = get_current_wpm();
-            oled_set_cursor(0, 2);
+            oled_set_cursor(0,9);
             oled_write_ln(depad_str(get_u16_str(last_wpm, ' '), ' '), false);
             
         }
